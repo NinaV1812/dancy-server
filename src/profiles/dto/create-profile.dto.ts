@@ -36,9 +36,8 @@
     readonly danceStyles?: DanceStyle[];
   
     @IsOptional()
-    @IsArray()
-    @IsString({ each: true })
-    readonly danceVideos?: string[];
+    @IsString()
+    readonly danceVideo?: string;
   
     @IsOptional()
     @IsString()

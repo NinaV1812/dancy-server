@@ -31,36 +31,44 @@ export class ProfileService {
     async findAll(queryParams: { role?: string; location?: string; danceLevel?: string; danceStyle?: string; lookingForFriends?: boolean }, skip = 0, limit = 10): Promise<Profile[]> {
         try {
             const query: any = {};
-            console.log('queryParams', queryParams)
+            console.log('queryParams', queryParams);
 
+            // Initialize the $or array if either location or role is provided
+            const orConditions: any[] = [];
+
+            // Add condition for location if provided
             if (queryParams.location) {
-                query['location'] = queryParams.location;
+                orConditions.push({ location: queryParams.location });
             }
+
+            // Add condition for role if provided
+            if (queryParams.role) {
+                orConditions.push({ role: queryParams.role });
+            }
+
+            // If there are any OR conditions, add them to the query
+            if (orConditions.length > 0) {
+                query['$or'] = orConditions;
+            }
+
+            // Apply additional filters
             if (queryParams.danceStyle) {
                 query["danceStyles"] = { $in: queryParams.danceStyle.split(',') }; // Expecting comma-separated values
             }
+
             if (queryParams.danceLevel) {
                 query["danceLevel"] = queryParams.danceLevel;
             }
-            if (queryParams.role) {
-                query['role'] = queryParams.role;
-            }
-            // if (queryParams.lookingForFriends !== undefined) {
-            //     query["lookingForFriends"] = queryParams.lookingForFriends === 'true';
-            //   }
-            console.log('query', query)
+
+
+            console.log('query', query);
+
             return await this.profileModel.find(query).skip(skip).limit(limit).exec();
         } catch (error) {
             this.logger.error('Error fetching all profiles', error.stack);
             throw new InternalServerErrorException('Failed to retrieve profiles');
         }
     }
-    //   async findAll(): Promise<Profile[]> {
-    //     return this.profileModel.find().exec();
-    //   }
-    //   async findOne(id: string): Promise<Profile> {
-    //     return this.profileModel.findOne({ _id: id }).exec();
-    //   }
 
     async findOne(id: string): Promise<Profile> {
         // if (!isValidObjectId(id)) {
@@ -128,4 +136,43 @@ export class ProfileService {
             throw new InternalServerErrorException(`Failed to delete profile with ID ${id}`);
         }
     }
+    async matchProfiles(userId: string, profileId: string): Promise<void> {
+        try {
+            // Add the profileId to the user's matches list
+            await this.profileModel.updateOne(
+                { _id: userId },
+                { $addToSet: { matches: profileId } }
+            );
+
+            // // Add the userId to the profile's matches list
+            // await this.profileModel.updateOne(
+            //     { _id: profileId },
+            //     { $addToSet: { matches: userId } }
+            // );
+            this.logger.log(`Profiles ${userId} and ${profileId} have been matched.`);
+        } catch (error) {
+            this.logger.error('Error matching profiles', error.stack);
+            throw new InternalServerErrorException('Failed to match profiles');
+        }
+    }
+    async unmatchProfiles(userId: string, profileId: string): Promise<void> {
+        try {
+            // Remove the profileId from the user's matches list
+            await this.profileModel.updateOne(
+                { _id: userId },
+                { $pull: { matches: profileId } }
+            );
+
+            // // Remove the userId from the profile's matches list
+            // await this.profileModel.updateOne(
+            //     { _id: profileId },
+            //     { $pull: { matches: userId } }
+            // );
+            this.logger.log(`Profiles ${userId} and ${profileId} have been unmatched.`);
+        } catch (error) {
+            this.logger.error('Error unmatching profiles', error.stack);
+            throw new InternalServerErrorException('Failed to unmatch profiles');
+        }
+    }
+
 }

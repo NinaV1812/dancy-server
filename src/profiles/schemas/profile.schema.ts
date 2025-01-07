@@ -30,8 +30,8 @@ export class Profile {
     danceStyles: DanceStyle[];
 
 
-    @Prop([String])
-    danceVideos: string[];
+    @Prop()
+    danceVideo: string;
 
     @Prop()
     profilePic: string;
@@ -68,6 +68,9 @@ export class Profile {
 
     @Prop()
     lookingForFriends: boolean;
+
+    @Prop([String])
+    matches: string[];
 }
 
 export const ProfileSchema = SchemaFactory.createForClass(Profile);

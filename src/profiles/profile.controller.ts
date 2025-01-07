@@ -14,11 +14,6 @@ export class ProfileController {
     return this.profileService.create(createCatDto);
   }
 
-  // @Get()
-  // async findAll(): Promise<Profile[]> {
-  //   return this.profileService.findAll();
-  // }
-
   @Get()
   async findAll(
     @Query() queryParams: { role?: string; location?: string; danceLevel?: string; danceStyle?: string; lookingForFriends?: boolean, skip?: string, limit?: string }
@@ -41,5 +36,22 @@ export class ProfileController {
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.profileService.delete(id);
+  }
+
+  @Post('match/:userId/:profileId')
+  async matchProfiles(
+    @Param('userId') userId: string,
+    @Param('profileId') profileId: string,
+  ) {
+    return this.profileService.matchProfiles(userId, profileId);
+  }
+
+  // Route to unmatch profiles
+  @Post('unmatch/:userId/:profileId')
+  async unmatchProfiles(
+    @Param('userId') userId: string,
+    @Param('profileId') profileId: string,
+  ) {
+    return this.profileService.unmatchProfiles(userId, profileId);
   }
 }

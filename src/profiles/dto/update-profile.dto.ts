@@ -18,10 +18,10 @@ export class UpdateProfileDto {
   @IsEnum(DanceStyle, { each: true })
   readonly danceStyles?: DanceStyle[];
 
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  readonly danceVideos?: string[];
+  // @IsOptional()
+  // @IsArray()
+  // @IsString({ each: true })
+  // readonly danceVideo?: string;
 
   @IsOptional()
   @IsString()
@@ -55,4 +55,13 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsBoolean()
   readonly lookingForFriends?: boolean;
+
+  @IsOptional()
+  @IsString()
+  readonly danceVideo?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  readonly matches?: string;
 }
