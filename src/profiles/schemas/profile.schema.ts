@@ -10,6 +10,9 @@ export type ProfileDocument = HydratedDocument<Profile>;
 export class Profile {
     @Prop()
     // @Prop({required: true})
+    _id: string;
+    @Prop()
+    // @Prop({required: true})
     firstName: string;
 
     // @Prop({required: true})
@@ -28,7 +31,6 @@ export class Profile {
         enum: DanceStyle,
     })
     danceStyles: DanceStyle[];
-
 
     @Prop()
     danceVideo: string;
