@@ -10,7 +10,6 @@ export type ProfileDocument = HydratedDocument<Profile>;
 export class Profile {
     @Prop()
     // @Prop({required: true})
-    _id: string;
     @Prop()
     // @Prop({required: true})
     firstName: string;

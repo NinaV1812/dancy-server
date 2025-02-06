@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Profile } from './schemas/profile.schema';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import * as mongoose from 'mongoose';
 
 
 @Injectable()
@@ -17,8 +18,12 @@ export class ProfileService {
     async create(createProfileDto: CreateProfileDto): Promise<Profile> {
         try {
             const createdProfile = new this.profileModel(createProfileDto);
-            return await createdProfile.save();
+            const profile = await createdProfile.save();
+            return profile
         } catch (error) {
+            if (error instanceof mongoose.Error.ValidationError) {
+                throw new BadRequestException(error.message);
+            }
             this.logger.error('Error creating profile', error.stack);
             throw new InternalServerErrorException('Failed to create profile');
         }
@@ -64,9 +69,10 @@ export class ProfileService {
         // if (!isValidObjectId(id)) {
         //   throw new BadRequestException(`Invalid ID format: ${id}`);
         // }
-
+        console.log('ID', id)
         try {
             const profile = await this.profileModel.findById(id).exec();
+            console.log('profile', profile)
             if (!profile) {
                 throw new NotFoundException(`Profile with ID ${id} not found`);
             }
